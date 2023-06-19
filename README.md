@@ -11,3 +11,5 @@ used llm to create a chtbot
 * pip install langchain
 * pip install reportlab
 * pip install beautifulsoup4
+* pip install tiktoken
+* pip install openai
