@@ -11,6 +11,8 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from extrcomb import scrape
 from loginlogic import login
+from signup_logic import signup
+
 
 def get_pdf_text(pdf_path):
     text = ""
@@ -136,8 +138,15 @@ def login_page():
 
     st.markdown("Don't have an account? Sign up below.")
     if st.button("Sign up", key="signup"):
-        # Add the signup logic here
-        st.write("Sign up clicked!")
+        signup_success = signup()
+        if signup_success:
+           st.write("Sign up successful!")
+        # Add any additional code or logic after successful signup
+           login_page()
+           
+        elif(signup_success==False):
+         st.write("Sign up failed. Please check your inputs.")
+         st.write("Sign up clicked!")
 
 
 def chat_page():
@@ -175,7 +184,9 @@ def main():
     if "login_status" not in st.session_state:
         st.session_state.login_status = False
 
-    st.set_page_config(page_title="Login and Chat Example")
+    st.set_page_config(page_title="Login and Chat Example",
+                        layout="centered",
+                     initial_sidebar_state="auto")
 
     if not st.session_state.login_status:
         login_page()
