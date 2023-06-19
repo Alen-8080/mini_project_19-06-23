@@ -64,7 +64,7 @@ def login_page():
         """
         <style>
         body {
-            background-color: #F0F2F6;  /* Set a different background color */
+            background-color: #FFFFFF;  /* Set a different background color */
         }
         .login-container {
             display: flex;
@@ -161,12 +161,12 @@ def chat_page():
                 vectorstore = get_vectorstore(text_chunks)
                 st.session_state.conversation = get_conversation_chain(vectorstore)
 
-        with st.sidebar:
+        st.subheader("Latest Notification")
+        latest_notification = get_pdf_text("/home/alen/Desktop/mini_project_19-06-23/announcements.pdf")
+        if st.button("Refresh"):
+            latest_notification = scrape()
+        st.write(latest_notification)
 
-            latest_notification = st.session_state.get("latest_notification")
-            if not latest_notification:
-                latest_notification = scrape()
-                st.session_state["latest_notification"] = latest_notification
 
 def main():
     load_dotenv()  # Load environment variables from .env file

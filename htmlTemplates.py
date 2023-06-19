@@ -28,7 +28,7 @@ css = '''
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
-        <img src="/home/alen/Desktop/llm_model/static/ktu-logo(1).png">
+        <img src="/home/alen/Desktop/mini_project_19-06-23/static/ktu-logo(1).png">
     </div>
     <div class="message">{{MSG}}</div>
 </div>
@@ -39,7 +39,7 @@ bot_template = '''
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="/home/alen/Desktop/llm_model/static/user-logo(1).png">
+        <img src="/home/alen/Desktop/mini_project_19-06-23/static/user-logo(1).png">
     </div>    
     <div class="message">{{MSG}}</div>
 </div>
