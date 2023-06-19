@@ -9,3 +9,5 @@ used llm to create a chtbot
 * pip install python-dotenv
 * pip install PyPDF2
 * pip install langchain
+* pip install reportlab
+* pip install beautifulsoup4
