@@ -13,3 +13,4 @@ used llm to create a chtbot
 * pip install beautifulsoup4
 * pip install tiktoken
 * pip install openai
+* pip install faiss-cpu
