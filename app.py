@@ -11,6 +11,10 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from extrcomb import scrape
 from loginlogic import login
+from signup_logic import signup
+import pickle
+
+
 
 def get_pdf_text(pdf_path):
     text = ""
@@ -20,20 +24,6 @@ def get_pdf_text(pdf_path):
             text += page.extract_text()
     return text
 
-def get_text_chunks(text):
-    text_splitter = CharacterTextSplitter(
-        separator="\n",
-        chunk_size=1000,
-        chunk_overlap=200,
-        length_function=len
-    )
-    chunks = text_splitter.split_text(text)
-    return chunks
-
-def get_vectorstore(text_chunks):
-    embeddings = OpenAIEmbeddings()
-    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
-    return vectorstore
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
@@ -44,6 +34,12 @@ def get_conversation_chain(vectorstore):
         memory=memory
     )
     return conversation_chain
+
+
+def load_vectorstore(vectorstore_path):
+    with open(vectorstore_path, "rb") as f:
+        vectorstore = pickle.load(f)
+    return vectorstore
 
 def handle_user_input(user_question):
     response = st.session_state.conversation({'question': user_question})
@@ -64,7 +60,7 @@ def login_page():
         """
         <style>
         body {
-            background-color: #F0F2F6;  /* Set a different background color */
+            background-color: #FFFFFF;  /* Set a different background color */
         }
         .login-container {
             display: flex;
@@ -136,8 +132,15 @@ def login_page():
 
     st.markdown("Don't have an account? Sign up below.")
     if st.button("Sign up", key="signup"):
-        # Add the signup logic here
-        st.write("Sign up clicked!")
+        signup_success = signup()
+        if signup_success:
+           st.write("Sign up successful!")
+        # Add any additional code or logic after successful signup
+           #login_page()
+           
+        elif(signup_success==False):
+         st.write("Sign up failed. Please check your inputs.")
+         st.write("Sign up clicked!")
 
 
 def chat_page():
@@ -147,26 +150,22 @@ def chat_page():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    st.header("Chat with AsKmE Chatbot :books:")
+    vectorstore_path = "/home/alen/Desktop/mini_project_19-06-23/processed_data/vectorstore.pkl"
+    vectors = load_vectorstore(vectorstore_path)
+    st.session_state.conversation = get_conversation_chain(vectors)
+
+    st.header("Chat with AsKMe Chatbot :books:")
     user_question = st.text_input("Ask a question about KTU notifications:")
     if user_question:
         handle_user_input(user_question)
 
     with st.sidebar:
-        pdf_path = "/home/alen/Desktop/llm_model/notification_data/notification.pdf"
-        if st.button("Process"):
-            with st.spinner("Processing"):
-                raw_text = get_pdf_text(pdf_path)
-                text_chunks = get_text_chunks(raw_text)
-                vectorstore = get_vectorstore(text_chunks)
-                st.session_state.conversation = get_conversation_chain(vectorstore)
+        st.subheader("Latest Notification")
+        latest_notification = get_pdf_text("/home/alen/Desktop/mini_project_19-06-23/announcements.pdf")
+        if st.button("Refresh"):
+            latest_notification = scrape()
+        st.write(latest_notification)
 
-        with st.sidebar:
-
-            latest_notification = st.session_state.get("latest_notification")
-            if not latest_notification:
-                latest_notification = scrape()
-                st.session_state["latest_notification"] = latest_notification
 
 def main():
     load_dotenv()  # Load environment variables from .env file
@@ -175,7 +174,9 @@ def main():
     if "login_status" not in st.session_state:
         st.session_state.login_status = False
 
-    st.set_page_config(page_title="Login and Chat Example")
+    st.set_page_config(page_title="Login and Chat Example",
+                        layout="centered",
+                     initial_sidebar_state="auto")
 
     if not st.session_state.login_status:
         login_page()
