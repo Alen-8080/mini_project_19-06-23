@@ -57,3 +57,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+with st.sidebar:
+        pdf_path = "/home/alen/Desktop/llm_model/notification_data/notification.pdf"
+        if st.button("Process"):
+            with st.spinner("Processing"):           
+                vectorstore_path = "/home/alen/Desktop/mini_project_19-06-23/processed_data/vectorstore.pkl"
+                vectors = load_vectorstore(vectorstore_path)
+                st.session_state.conversation = get_conversation_chain(vectors)

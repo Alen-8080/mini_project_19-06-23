@@ -77,8 +77,10 @@ def signup():
     semester = st.text_input("Semester")
     college = st.text_input("College")
     phone_no = st.text_input("Phone Number")
+
+    button_clicked = st.button("Sign Up Now")
     
-    if st.button("Sign Up"):
+    if button_clicked:
         if validate_inputs(username, password, user_type, branch, semester, college, phone_no):
             save_to_csv(username, password, user_type, branch, semester, college, phone_no)
             return True
