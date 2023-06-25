@@ -14,8 +14,6 @@ from loginlogic import login
 from signup_logic import signup
 import pickle
 
-
-
 def get_pdf_text(pdf_path):
     text = ""
     with open(pdf_path, 'rb') as f:
@@ -23,7 +21,6 @@ def get_pdf_text(pdf_path):
         for page in pdf_reader.pages:
             text += page.extract_text()
     return text
-
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
@@ -34,7 +31,6 @@ def get_conversation_chain(vectorstore):
         memory=memory
     )
     return conversation_chain
-
 
 def load_vectorstore(vectorstore_path):
     with open(vectorstore_path, "rb") as f:
@@ -116,7 +112,6 @@ def login_page():
     logo_image = Image.open('/home/alen/Desktop/llm_model/static/kerala-technological-university-ktu-3-638.jpg')  # Replace with the path to your logo image
     st.image(logo_image, caption="", width=200)
 
-
     st.markdown('<h1 class="title">Welcome to the KTU Chatbot</h1>', unsafe_allow_html=True)
 
     username = st.text_input("Username", key="username")
@@ -130,18 +125,15 @@ def login_page():
         else:
             st.error("Invalid password")
 
-    st.markdown("Don't have an account? Sign up below.")
+    st.markdown("Don't have an account? Sign up below")
     if st.button("Sign up", key="signup"):
         signup_success = signup()
         if signup_success:
            st.write("Sign up successful!")
-        # Add any additional code or logic after successful signup
-           #login_page()
-           
-        elif(signup_success==False):
-         st.write("Sign up failed. Please check your inputs.")
-         st.write("Sign up clicked!")
-
+           # Add any additional code or logic after successful signup
+           st.session_state.login_status = True  # Set the login flag to True after successful signup
+        else:
+            st.write("Sign up failed. Please check your inputs.")
 
 def chat_page():
     st.write(css, unsafe_allow_html=True)
@@ -166,17 +158,17 @@ def chat_page():
             latest_notification = scrape()
         st.write(latest_notification)
 
-
 def main():
     load_dotenv()  # Load environment variables from .env file
 
-    # Initialize the login flag using Streamlit's SessionState
+    st.set_page_config(
+        page_title="KTU Chatbot",
+        layout="centered",
+        initial_sidebar_state="auto"
+    )
+
     if "login_status" not in st.session_state:
         st.session_state.login_status = False
-
-    st.set_page_config(page_title="Login and Chat Example",
-                        layout="centered",
-                     initial_sidebar_state="auto")
 
     if not st.session_state.login_status:
         login_page()
