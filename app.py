@@ -130,7 +130,6 @@ def login_page():
         signup_success = signup()
         if signup_success:
            st.write("Sign up successful!")
-           # Add any additional code or logic after successful signup
            st.session_state.login_status = True  # Set the login flag to True after successful signup
         else:
             st.write("Sign up failed. Please check your inputs.")
